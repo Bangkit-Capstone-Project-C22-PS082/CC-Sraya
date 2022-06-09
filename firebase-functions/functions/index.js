@@ -11,21 +11,21 @@ const app = express();
 app.use(authMiddleware);
 
 app.get("/", async (req, res) => {
-  const snapshot = await admin.firestore().collection("users").get();
+  const snapshot = await admin.firestore().collection("Users").get();
 
-  let users = [];
+  let Users = [];
   snapshot.forEach((doc) => {
     let id = doc.id;
     let data = doc.data();
 
-    users.push({ id, ...data });
+    Users.push({ id, ...data });
   });
 
-  res.status(200).send(JSON.stringify(users));
+  res.status(200).send(JSON.stringify(Users));
 });
 
 app.get("/:id", async (req, res) => {
-    const snapshot = await admin.firestore().collection('users').doc(req.params.id).get();
+    const snapshot = await admin.firestore().collection('Users').doc(req.params.id).get();
 
     const userId = snapshot.id;
     const userData = snapshot.data();
@@ -34,9 +34,9 @@ app.get("/:id", async (req, res) => {
 })
 
 app.post("/", async (req, res) => {
-  const user = req.body;
+  const User = req.body;
 
-  await admin.firestore().collection("users").add(user);
+  await admin.firestore().collection("Users").add(user);
 
   res.status(201).send();
 });
@@ -44,13 +44,13 @@ app.post("/", async (req, res) => {
 app.put("/:id", async (req, res) => {
     const body = req.body;
 
-    await admin.firestore().collection('users').doc(req.params.id).update(body);
+    await admin.firestore().collection('Users').doc(req.params.id).update(body);
 
     res.status(200).send()
 });
 
 app.delete("/:id", async (req, res) => {
-    await admin.firestore().collection("users").doc(req.params.id).delete();
+    await admin.firestore().collection("Users").doc(req.params.id).delete();
 
     res.status(200).send();
 })
