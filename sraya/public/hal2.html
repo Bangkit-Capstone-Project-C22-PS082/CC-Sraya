@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <title>Dashboard Sraya</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+
+    <input type="checkbox" id="sidebar-geser">
+    <div class="sidebar">
+        <div class="sidebar-atas">
+            <h3 class="brand">
+                <span>Sraya</span>
+            </h3>
+            <label for="sidebar-geser" class="ti-menu-alt"></label>
+        </div>
+
+        <div class="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="index.html">
+                        <span class="ti-home"></span>
+                        <span>Halaman Utama</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <span class="ti-face-smile"></span>
+                        <span>Tentang</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-utama">
+
+        <header>
+            <div class="kotak-search">
+                <span class="ti-search"></span>
+                <input type="search" placeholder="Cari">
+            </div>
+
+            <div class="icons-atas">
+                <span class="ti-bell"></span>
+                <span class="ti-comment"></span>
+                <div></div>
+            </div>
+        </header>
+
+        <main>
+
+            <h2 class="judul-dashboard">Laporan Proteksi</h2>
+
+                <section class="info-terbaru">
+                    <div class="grid-aktivitas">
+                        <div class="judul-aktivitas">
+                        <h3>Aktivitas Terbaru</h3>
+
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                        <th>No</th>
+                                        <th>NIK</th>
+                                        <th>Nama</th>
+                                        <th>Lokasi</th>
+                                </thead>
+                                <tbody id="tbody1"></tbody>
+                            </table>
+                        </div>
+                      </div>
+                    </div>
+
+                
+        </main>
+
+    </div>
+    <script type="module">
+
+      /*-------------------MENGISI TABEL--------------*/
+            var userNo = 0;
+            var tbody = document.getElementById('tbody1');
+
+            function AddItemToTable(nik,nama,geolokasi){
+                let trow = document.createElement("tr");
+                let td1 = document.createElement('td');
+                let td2 = document.createElement('td');
+                let td3 = document.createElement('td');
+                let td4 = document.createElement('td');
+
+                td1.innerHTML= ++userNo;
+                td2.innerHTML= nik;
+                td3.innerHTML= nama;
+                td4.innerHTML= geolokasi;
+
+                trow.appendChild(td1);
+                trow.appendChild(td2);
+                trow.appendChild(td3);
+                trow.appendChild(td4);
+                
+                tbody.appendChild(trow);
+
+            }
+
+            function AddAllItemToTable(Protection){
+                userNo=0;
+                tbody.innerHTML="";
+                Protection.forEach(element => {
+                    AddItemToTable(element.NIK, element.Nama, element.Geolokasi)
+                });
+            }
+
+            /*-------------------IMPORT & KONFIGURASI--------------*/
+
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js";
+            
+            const firebaseConfig = {
+                apiKey: "AIzaSyBLiu5p-9dWX2XkwL6OQdcJbnli6pXxbII",
+                authDomain: "sraya-2022.firebaseapp.com",
+                databaseURL: "https://sraya-2022-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "sraya-2022",
+                storageBucket: "sraya-2022.appspot.com",
+                messagingSenderId: "783189318876",
+                appId: "1:783189318876:web:a1d741f015ea13cdff6819",
+                measurementId: "G-YD9EG3E82S"
+            };
+
+            const app = initializeApp(firebaseConfig);
+
+            import {
+                getFirestore, doc, getDoc, getDocs, onSnapshot, collection
+            }
+            from "https://www.gstatic.com/firebasejs/9.8.3/firebase-firestore.js";
+
+            const db =getFirestore();
+
+            /*-------------------GET SEMUA DATA--------------*/
+
+            async function GetAllDataOnce(){
+                const querySnapshot = await getDocs(collection(db, "ReportProtection"));
+
+                var protection = [];
+
+                querySnapshot.forEach(doc => {
+                    protection.push(doc.data());
+                });
+
+                AddAllItemToTable(protection);
+            }
+
+            async function GetAllDataRealtime(){
+                const dbRef = collection(db, "ReportProtection");
+
+                onSnapshot(dbRef, (querySnapshot)=>{
+                    var protection = [];
+
+                    querySnapshot.forEach(doc => {
+                        protection.push(doc.data());
+                    });
+
+                    AddAllItemToTable(protection);
+                })
+
+                
+
+            }
+
+            window.onload = GetAllDataRealtime;
+
+    </script>
+</body>
+</html>
